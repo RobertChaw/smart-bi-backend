@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.robert.smartbi.demo.mapper.ChartMapper">
+
+    <resultMap id="BaseResultMap" type="com.robert.smartbi.demo.model.entity.Chart">
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="userId" property="userId" jdbcType="BIGINT" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="datasourceId" property="datasourceId" jdbcType="BIGINT" />
+        <result column="chatHistory" property="chatHistory" jdbcType="VARCHAR" />
+        <result column="sqlText" property="sqlText" jdbcType="VARCHAR" />
+        <result column="chartText" property="chartText" jdbcType="VARCHAR" />
+        <result column="chatId" property="chatId" jdbcType="BIGINT" />
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="isDelete" property="isDelete" jdbcType="TINYINT" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, userId, description, datasourceId, chatHistory, sqlText, chartText, chatId, createTime, updateTime, isDelete
+    </sql>
+
+
+    <!-- 其他 SQL 映射语句，例如查询、插入、更新、删除等 -->
+</mapper>

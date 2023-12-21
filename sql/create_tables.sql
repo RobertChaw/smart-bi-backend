@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS bi;
+
+USE bi;
+
 CREATE TABLE user
 (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -11,7 +15,7 @@ CREATE TABLE user
     isDelete    TINYINT(1) DEFAULT 0                                             NOT NULL COMMENT '逻辑删除标志（0表示未删除，1表示已删除）'
 ) COMMENT '用户数据表';
 
-CREATE TABLE chatHistory
+CREATE TABLE chat
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(255)                                                     NOT NULL COMMENT '名称',
@@ -27,10 +31,11 @@ CREATE TABLE chart
     userId       BIGINT                                                           NOT NULL COMMENT '用户ID',
     description  VARCHAR(255)                                                     NOT NULL COMMENT '描述',
     datasourceId BIGINT                                                           NOT NULL COMMENT '数据源',
-    chatHistory  TEXT                                                             NOT NULL COMMENT '会话记录',
+    chatHistory  TEXT COMMENT '会话记录',
+    goal         TEXT                                                             NOT NULL COMMENT '生成目标',
     sqlText      TEXT COMMENT '查询语句字符串',
     chartText    TEXT COMMENT '图表配置代码',
-    historyId    BIGINT                                                           NOT NULL COMMENT '聊天历史 ID',
+    chatId       BIGINT                                                           NOT NULL COMMENT '聊天 ID',
     createTime   TIMESTAMP  DEFAULT CURRENT_TIMESTAMP                             NOT NULL COMMENT '创建时间',
     updateTime   TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL COMMENT '更新时间',
     isDelete     TINYINT(1) DEFAULT 0                                             NOT NULL COMMENT '逻辑删除标志（0表示未删除，1表示已删除）'
