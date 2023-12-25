@@ -1,6 +1,7 @@
 package com.robert.smartbi.demo.mapper;
 
 import com.baomidou.mybatisplus.core.toolkit.Assert;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.robert.smartbi.demo.model.entity.User;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ public class MapperTest {
     @Test
     void testSelect() {
         System.out.println("----- selectAll method test ------");
-        List<User> userList = userMapper.selectList(null);
+        List<User> userList = userMapper.selectList(new Page<User>(1, 10), null);
         Assert.isTrue(1 < userList.size(), "成功");
         userList.forEach(System.out::println);
     }
