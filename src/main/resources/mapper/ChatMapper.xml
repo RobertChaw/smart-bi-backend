@@ -5,19 +5,48 @@
 <mapper namespace="com.robert.smartbi.demo.mapper.ChatMapper">
 
     <resultMap id="BaseResultMap" type="com.robert.smartbi.demo.model.entity.Chat">
-        <id column="id" property="id" jdbcType="BIGINT" />
-        <result column="name" property="name" jdbcType="VARCHAR" />
-        <result column="userId" property="userId" jdbcType="BIGINT" />
-        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
-        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
-        <result column="isDelete" property="isDelete" jdbcType="TINYINT" />
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="userId" property="userId" jdbcType="BIGINT"/>
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="isDelete" property="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id, name, userId, createTime, updateTime, isDelete
     </sql>
 
+    <resultMap id="ChatWithChartResultMap" type="com.robert.smartbi.demo.model.entity.ChatWithChart">
+        <id column="chat_id" property="id" jdbcType="BIGINT"/>
+        <result column="chat_name" property="name" jdbcType="VARCHAR"/>
+        <result column="chat_userId" property="userId" jdbcType="BIGINT"/>
+        <result column="chat_createTime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="chat_updateTime" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="chat_isDelete" property="isDelete" jdbcType="TINYINT"/>
+        <collection property="chartList" ofType="com.robert.smartbi.demo.model.entity.Chart">
+            <id column="chart_id" property="id" jdbcType="BIGINT"/>
+            <result column="chart_description" property="description" jdbcType="VARCHAR"/>
+            <result column="chart_createTime" property="createTime" jdbcType="TIMESTAMP"/>
+            <result column="chart_updateTime" property="updateTime" jdbcType="TIMESTAMP"/>
+        </collection>
+    </resultMap>
 
-
+    <select id="listChatWithChartByUserId" resultMap="ChatWithChartResultMap">
+        SELECT chat.id           AS chat_id,
+               chat.name         AS chat_name,
+               chat.userId       AS chat_userId,
+               chat.createTime   AS chat_createTime,
+               chat.updateTime   AS chat_updateTime,
+               chat.isDelete     AS chat_isDelete,
+               chart.id          AS chart_id,
+               chart.description AS chart_description,
+               chart.createTime  AS chart_createTime,
+               chart.updateTime  AS chart_updateTime
+        FROM chat
+                 JOIN chart ON chat.id = chart.chatId
+        WHERE chat.userId = #{userId}
+        ORDER BY chat.createTime DESC, chart.createTime DESC
+    </select>
     <!-- 其他 SQL 映射语句，例如查询、插入、更新、删除等 -->
 </mapper>

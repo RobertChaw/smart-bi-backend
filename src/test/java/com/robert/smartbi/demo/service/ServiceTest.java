@@ -12,6 +12,8 @@ import java.util.List;
 public class ServiceTest {
     @Resource
     UserService userService;
+    @Resource
+    ChatService chatService;
 
     @Test
     void testService() {

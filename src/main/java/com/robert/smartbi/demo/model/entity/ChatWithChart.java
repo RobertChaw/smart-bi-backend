@@ -1,22 +1,22 @@
 package com.robert.smartbi.demo.model.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 
 @Data
-@TableName(value = "chat")
-public class Chat implements Serializable {
-    @TableId(type = IdType.AUTO)
+public class ChatWithChart implements Serializable {
     private Long id;
-
     private String name;
     private Long userId;
+    private Date createTime;
+    private Date updateTime;
 
-    private Timestamp createTime;
-    private Timestamp updateTime;
+    private List<Chart> chartList;
 
     @TableLogic
     private Integer isDelete;
@@ -24,3 +24,4 @@ public class Chat implements Serializable {
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
+
