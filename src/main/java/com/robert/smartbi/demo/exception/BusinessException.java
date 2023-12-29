@@ -1,6 +1,7 @@
 package com.robert.smartbi.demo.exception;
 
 import com.robert.smartbi.demo.common.ErrorCode;
+import lombok.Data;
 
 public class BusinessException extends RuntimeException {
     private final int code;
@@ -18,5 +19,9 @@ public class BusinessException extends RuntimeException {
     public BusinessException(ErrorCode errorCode, String message) {
         super(message);
         this.code = errorCode.getCode();
+    }
+
+    public int getCode() {
+        return code;
     }
 }
