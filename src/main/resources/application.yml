@@ -17,3 +17,8 @@ mybatis-plus:
       logic-delete-field: isDelete
       logic-delete-value: 1
       logic-not-delete-value: 0
+openai:
+  token: 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
+  proxy:
+    host: '127.0.0.1'
+    port: 7890
