@@ -1,7 +1,8 @@
-package com.robert.smartbi.demo.model.entity;
+package com.robert.smartbi.demo.model.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.robert.smartbi.demo.model.entity.Chart;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class ChatWithChart implements Serializable {
+public class Chat implements Serializable {
     private Long id;
     private String name;
     private Long userId;

@@ -28,17 +28,18 @@ CREATE TABLE chat
 CREATE TABLE chart
 (
     id           BIGINT AUTO_INCREMENT PRIMARY KEY,
-    userId       BIGINT                                                           NOT NULL COMMENT '用户ID',
-    description  VARCHAR(255)                                                     NOT NULL COMMENT '描述',
-    datasourceId BIGINT                                                           NOT NULL COMMENT '数据源',
+    userId       BIGINT                                                                                                   NOT NULL COMMENT '用户ID',
+    description  VARCHAR(255)                                                                                             NOT NULL COMMENT '描述',
+    datasourceId BIGINT                                                                                                   NOT NULL COMMENT '数据源',
     chatHistory  TEXT COMMENT '会话记录',
-    goal         TEXT                                                             NOT NULL COMMENT '生成目标',
+    goal         TEXT                                                                                                     NOT NULL COMMENT '生成目标',
     sqlText      TEXT COMMENT '查询语句字符串',
     chartText    TEXT COMMENT '图表配置代码',
-    chatId       BIGINT                                                           NOT NULL COMMENT '聊天 ID',
-    createTime   TIMESTAMP  DEFAULT CURRENT_TIMESTAMP                             NOT NULL COMMENT '创建时间',
-    updateTime   TIMESTAMP  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL COMMENT '更新时间',
-    isDelete     TINYINT(1) DEFAULT 0                                             NOT NULL COMMENT '逻辑删除标志（0表示未删除，1表示已删除）'
+    chatId       BIGINT                                                                                                   NOT NULL COMMENT '聊天 ID',
+    status       ENUM ('waiting', 'running', 'succeeded', 'failed') DEFAULT 'waiting'                                     NOT NULL COMMENT '状态',
+    createTime   TIMESTAMP                                          DEFAULT CURRENT_TIMESTAMP                             NOT NULL COMMENT '创建时间',
+    updateTime   TIMESTAMP                                          DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL COMMENT '更新时间',
+    isDelete     TINYINT(1)                                         DEFAULT 0                                             NOT NULL COMMENT '逻辑删除标志（0表示未删除，1表示已删除）'
 ) COMMENT '图表数据表';
 
 CREATE TABLE dataSource

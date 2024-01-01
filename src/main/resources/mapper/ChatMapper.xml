@@ -14,10 +14,11 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, userId, createTime, updateTime, isDelete
+        id
+        , name, userId, createTime, updateTime, isDelete
     </sql>
 
-    <resultMap id="ChatWithChartResultMap" type="com.robert.smartbi.demo.model.entity.ChatWithChart">
+    <resultMap id="ChatWithChartResultMap" type="com.robert.smartbi.demo.model.vo.Chat">
         <id column="chat_id" property="id" jdbcType="BIGINT"/>
         <result column="chat_name" property="name" jdbcType="VARCHAR"/>
         <result column="chat_userId" property="userId" jdbcType="BIGINT"/>
@@ -27,6 +28,7 @@
         <collection property="chartList" ofType="com.robert.smartbi.demo.model.entity.Chart">
             <id column="chart_id" property="id" jdbcType="BIGINT"/>
             <result column="chart_description" property="description" jdbcType="VARCHAR"/>
+            <result column="chart_status" property="status" jdbcType="VARCHAR"/>
             <result column="chart_createTime" property="createTime" jdbcType="TIMESTAMP"/>
             <result column="chart_updateTime" property="updateTime" jdbcType="TIMESTAMP"/>
         </collection>
@@ -41,6 +43,7 @@
                chat.isDelete     AS chat_isDelete,
                chart.id          AS chart_id,
                chart.description AS chart_description,
+               chart.status      AS chart_status,
                chart.createTime  AS chart_createTime,
                chart.updateTime  AS chart_updateTime
         FROM chat

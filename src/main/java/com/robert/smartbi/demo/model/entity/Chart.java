@@ -19,7 +19,7 @@ public class Chart implements Serializable {
     private String sqlText;
     private String chartText;
     private Long chatId;
-
+    private String status;
     private Timestamp createTime;
     private Timestamp updateTime;
 
