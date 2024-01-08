@@ -21,8 +21,10 @@ CREATE TABLE chart
     userId      BIGINT                                                                                                   NOT NULL COMMENT '用户ID',
     goal        TEXT                                                                                                     NOT NULL COMMENT '生成目标',
     chartOption TEXT COMMENT '图表配置代码',
+    data        TEXT COMMENT '图表原始数据,指向 COS 存储 ID',
+    summary     TEXT COMMENT '摘要',
     status      ENUM ('waiting', 'running', 'succeeded', 'failed') DEFAULT 'waiting'                                     NOT NULL COMMENT '状态',
-    summary     TEXT                                                                                                     NOT NULL COMMENT '摘要',
+    reason      TEXT COMMENT '失败原因',
     createTime  TIMESTAMP                                          DEFAULT CURRENT_TIMESTAMP                             NOT NULL COMMENT '创建时间',
     updateTime  TIMESTAMP                                          DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL COMMENT '更新时间',
     isDelete    TINYINT(1)                                         DEFAULT 0                                             NOT NULL COMMENT '逻辑删除标志（0表示未删除，1表示已删除）'

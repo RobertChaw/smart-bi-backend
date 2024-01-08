@@ -4,10 +4,11 @@ spring:
     username: root
     password: 123456
     url: jdbc:mysql://localhost:3306/bi
-#  sql:
-#    init:
-#      schema-locations: classpath:sql/create_tables.sql
-#      data-locations: classpath:sql/data.sql
+  rabbitmq:
+    host: localhost
+    port: 5672
+    password: guest
+    username: guest
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
@@ -18,7 +19,7 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 openai:
-  token: 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
+  token: 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
   proxy:
     host: '127.0.0.1'
     port: 7890

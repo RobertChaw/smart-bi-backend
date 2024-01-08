@@ -5,7 +5,6 @@ import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.COSObjectInputStream;
 import com.qcloud.cos.model.PutObjectResult;
-import com.robert.smartbi.demo.config.COSConfig;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -16,16 +15,16 @@ import java.io.File;
 @SpringBootTest
 public class ManagerTest {
     @Resource
-    private CosManager cosManager;
+    private COSManager cosManager;
     @Resource
     private COSClient cosClient;
 
     @Test
     @SneakyThrows
     void testCosManager() {
-        File file = new File("src/test/resources/msg.txt");
-        PutObjectResult putObjectResult = cosManager.putObject("msg.txt", file);
-        COSObject cosObject = cosManager.getObject("msg.txt");
+        File file = new File("src/test/resources/testData.txt");
+        PutObjectResult putObjectResult = cosManager.putObject("testData.txt", file);
+        COSObject cosObject = cosManager.getObject("testData.txt");
         COSObjectInputStream cosObjectInputStream = cosObject.getObjectContent();
         byte[] bytes = cosObjectInputStream.readAllBytes();
         String result = new String(bytes);

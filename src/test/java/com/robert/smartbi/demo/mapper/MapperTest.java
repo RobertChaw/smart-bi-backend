@@ -24,5 +24,4 @@ public class MapperTest {
         userList.forEach(System.out::println);
     }
 
-
 }

@@ -1,6 +1,7 @@
 package com.robert.smartbi.demo.config;
 
 import com.baomidou.mybatisplus.core.toolkit.Assert;
+
 import com.theokanning.openai.completion.CompletionChoice;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
@@ -34,6 +35,7 @@ public class ConfigTest {
         ChatCompletionChoice choice = openAiService.createChatCompletion(chatCompletionRequest).getChoices().getFirst();
         Assert.isTrue(choice != null, "成功");
         String content = choice.getMessage().getContent();
+
         System.out.println("来自ChatGPT的回复: " + content);
     }
 }
