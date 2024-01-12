@@ -13,13 +13,10 @@ public class Chart implements Serializable {
     private Long id;
 
     private Long userId;
-    private String description;
-    private Long datasourceId;
-    private String chatHistory;
-    private String sqlText;
-    private String chartText;
-    private Long chatId;
+    private String goal;
+    private String chartOption;
     private String status;
+    private String summary;
     private Timestamp createTime;
     private Timestamp updateTime;
 

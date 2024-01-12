@@ -5,21 +5,20 @@
 <mapper namespace="com.robert.smartbi.demo.mapper.ChartMapper">
 
     <resultMap id="BaseResultMap" type="com.robert.smartbi.demo.model.entity.Chart">
-        <id column="id" property="id" jdbcType="BIGINT" />
-        <result column="userId" property="userId" jdbcType="BIGINT" />
-        <result column="description" property="description" jdbcType="VARCHAR" />
-        <result column="datasourceId" property="datasourceId" jdbcType="BIGINT" />
-        <result column="chatHistory" property="chatHistory" jdbcType="VARCHAR" />
-        <result column="sqlText" property="sqlText" jdbcType="VARCHAR" />
-        <result column="chartText" property="chartText" jdbcType="VARCHAR" />
-        <result column="chatId" property="chatId" jdbcType="BIGINT" />
-        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
-        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
-        <result column="isDelete" property="isDelete" jdbcType="TINYINT" />
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="userId" property="userId" jdbcType="BIGINT"/>
+        <result column="goal" property="goal" jdbcType="TEXT"/>
+        <result column="chartOption" property="chartOption" jdbcType="TEXT"/>
+        <result column="status" property="status" jdbcType="ENUM"/>
+        <result column="summary" property="summary" jdbcType="TEXT"/>
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="isDelete" property="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
+
     <sql id="Base_Column_List">
-        id, userId, description, datasourceId, chatHistory, sqlText, chartText, chatId, createTime, updateTime, isDelete
+        id, userId, goal, chartOption, status, summary, createTime, updateTime, isDelete
     </sql>
 
 
