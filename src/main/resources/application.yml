@@ -22,3 +22,8 @@ openai:
   proxy:
     host: '127.0.0.1'
     port: 7890
+cos:
+  secretId: AKIDHmZgC3trw5EdOIF501bb8GZ4oT4lP3lX
+  secretKey: 217CMWODyljhYJ60oaTrCYE2mjAlXIAH
+  region: ap-hongkong
+  bucket: smatbi-1253865806
