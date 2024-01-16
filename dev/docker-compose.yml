@@ -24,14 +24,14 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-#  redis:
-#    container_name: cache
-#    image: redis
-#    restart: always
-#    ports:
-#      - "6379:6379"
-#    volumes:
-#      - redis-data:/data
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
 #  elasticsearch:
 #    container_name: elasticsearch
 #    image: elasticsearch:8.11.1

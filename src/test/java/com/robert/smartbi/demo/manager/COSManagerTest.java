@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.File;
 
 @SpringBootTest
-public class ManagerTest {
+public class COSManagerTest {
     @Resource
     private COSManager cosManager;
     @Resource
@@ -21,7 +21,7 @@ public class ManagerTest {
 
     @Test
     @SneakyThrows
-    void testCosManager() {
+    void runTest() {
         File file = new File("src/test/resources/testData.txt");
         PutObjectResult putObjectResult = cosManager.putObject("testData.txt", file);
         COSObject cosObject = cosManager.getObject("testData.txt");

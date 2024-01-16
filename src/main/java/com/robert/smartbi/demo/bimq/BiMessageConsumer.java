@@ -8,6 +8,7 @@ import com.rabbitmq.client.Channel;
 import com.robert.smartbi.demo.common.ErrorCode;
 import com.robert.smartbi.demo.exception.ThrowUtils;
 import com.robert.smartbi.demo.manager.COSManager;
+import com.robert.smartbi.demo.manager.RedisLimiterManager;
 import com.robert.smartbi.demo.model.entity.Chart;
 import com.robert.smartbi.demo.service.ChartService;
 import com.theokanning.openai.completion.chat.*;
@@ -36,12 +37,16 @@ public class BiMessageConsumer {
     @Resource
     private COSManager cosManager;
 
+    @Resource
+    private RedisLimiterManager redisLimiterManager;
     @SneakyThrows
     @RabbitListener(queues = {BiMqConstant.QUEUE_NAME}, ackMode = "MANUAL")
     public void receiveMessage(String message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
         Chart chart = chartService.getById(message);
-
         ThrowUtils.throwIf(chart == null, ErrorCode.OPERATION_ERROR);
+
+        String userId = Long.toString(chart.getUserId());
+        redisLimiterManager.doRateLimit(userId);
 
         // 从数据库读取相关消息，用于生成 ChatGPT 对话
         String goal = chart.getGoal();

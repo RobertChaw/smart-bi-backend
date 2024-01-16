@@ -11,6 +11,6 @@ class BiMessageProducerTest {
 
     @Test
     void runTest() {
-        biMessageProducer.sendMessage(Long.toString(60L));
+        biMessageProducer.sendMessage(Long.toString(30L));
     }
 }
