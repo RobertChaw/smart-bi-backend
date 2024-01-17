@@ -2,6 +2,7 @@ package com.robert.smartbi.demo.controller;
 
 import com.robert.smartbi.demo.model.entity.Chart;
 import com.robert.smartbi.demo.service.ChartService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @RequestMapping("/api/charts")
 public class ChartController {
 
-    @Autowired
+    @Resource
     private ChartService chartService;
 
     @GetMapping("/{id}")
