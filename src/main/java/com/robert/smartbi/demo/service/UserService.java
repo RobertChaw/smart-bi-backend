@@ -9,7 +9,10 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService extends IService<User> {
     long register(UserRegisterRequest userRegisterRequest);
+
     LoginUserVO login(UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest);
+
+    LoginUserVO getCurrentUser(HttpServletRequest httpServletRequest);
 
     boolean logout(HttpServletRequest httpServletRequest);
 }

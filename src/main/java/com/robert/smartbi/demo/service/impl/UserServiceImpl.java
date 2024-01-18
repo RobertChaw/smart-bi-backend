@@ -77,6 +77,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public LoginUserVO getCurrentUser( HttpServletRequest httpServletRequest) {
+        HttpSession session = httpServletRequest.getSession();
+        User user = (User) session.getAttribute(UserConstant.USER_LOGIN_STATE);
+        boolean isEmpty = session.getAttribute(UserConstant.USER_LOGIN_STATE) == null;
+        ThrowUtils.throwIf(isEmpty, ErrorCode.OPERATION_ERROR, "未登录");
+
+        LoginUserVO loginUserVO = new LoginUserVO();
+        BeanUtils.copyProperties(user, loginUserVO);
+        return loginUserVO;
+    }
+
+    @Override
     public boolean logout(HttpServletRequest httpServletRequest) {
         HttpSession session = httpServletRequest.getSession();
         boolean isEmpty = session.getAttribute(UserConstant.USER_LOGIN_STATE) == null;

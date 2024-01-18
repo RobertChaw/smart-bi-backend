@@ -74,9 +74,11 @@ public class UserController {
     }
 
     @GetMapping("/getCurrentUser")
-    public void getCurrentUser() {
+    public BaseResponse<LoginUserVO> getCurrentUser(HttpServletRequest servletRequest) {
         // 返回当前用户信息
-//        return currentUser;
+        ThrowUtils.throwIf(servletRequest == null, ErrorCode.PARAMS_ERROR);
+        LoginUserVO loginUserVO = userService.getCurrentUser(servletRequest);
+        return ResultUtils.success(loginUserVO);
     }
 
     @PutMapping("/updateCurrentUser")
