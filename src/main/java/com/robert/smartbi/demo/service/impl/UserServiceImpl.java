@@ -77,11 +77,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public LoginUserVO getCurrentUser( HttpServletRequest httpServletRequest) {
+    public LoginUserVO getCurrentUser(HttpServletRequest httpServletRequest) {
         HttpSession session = httpServletRequest.getSession();
         User user = (User) session.getAttribute(UserConstant.USER_LOGIN_STATE);
         boolean isEmpty = session.getAttribute(UserConstant.USER_LOGIN_STATE) == null;
-        ThrowUtils.throwIf(isEmpty, ErrorCode.OPERATION_ERROR, "未登录");
+        ThrowUtils.throwIf(isEmpty, ErrorCode.NOT_LOGIN_ERROR, "未登录");
 
         LoginUserVO loginUserVO = new LoginUserVO();
         BeanUtils.copyProperties(user, loginUserVO);
@@ -92,7 +92,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean logout(HttpServletRequest httpServletRequest) {
         HttpSession session = httpServletRequest.getSession();
         boolean isEmpty = session.getAttribute(UserConstant.USER_LOGIN_STATE) == null;
-        ThrowUtils.throwIf(isEmpty, ErrorCode.OPERATION_ERROR, "未登录");
+        ThrowUtils.throwIf(isEmpty, ErrorCode.NOT_LOGIN_ERROR, "未登录");
 
         session.removeAttribute(UserConstant.USER_LOGIN_STATE);
         return true;
