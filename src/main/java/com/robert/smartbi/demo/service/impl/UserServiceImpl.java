@@ -13,6 +13,7 @@ import com.robert.smartbi.demo.model.vo.LoginUserVO;
 import com.robert.smartbi.demo.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -66,12 +67,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.eq("userAccount", userAccount);
         queryWrapper.eq("password", encryptedPassword);
         User user = getOne(queryWrapper);
-
         ThrowUtils.throwIf(user == null, ErrorCode.PARAMS_ERROR, "用户名或密码错误");
+
         httpServletRequest.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+
         LoginUserVO loginUserVO = new LoginUserVO();
         BeanUtils.copyProperties(user, loginUserVO);
         return loginUserVO;
+    }
+
+    @Override
+    public boolean logout(HttpServletRequest httpServletRequest) {
+        HttpSession session = httpServletRequest.getSession();
+        boolean isEmpty = session.getAttribute(UserConstant.USER_LOGIN_STATE) == null;
+        ThrowUtils.throwIf(isEmpty, ErrorCode.OPERATION_ERROR, "未登录");
+
+        session.removeAttribute(UserConstant.USER_LOGIN_STATE);
+        return true;
     }
 
 

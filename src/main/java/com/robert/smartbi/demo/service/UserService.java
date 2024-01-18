@@ -8,6 +8,8 @@ import com.robert.smartbi.demo.model.vo.LoginUserVO;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService extends IService<User> {
-    public long register(UserRegisterRequest userRegisterRequest);
-    public LoginUserVO login(UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest);
+    long register(UserRegisterRequest userRegisterRequest);
+    LoginUserVO login(UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest);
+
+    boolean logout(HttpServletRequest httpServletRequest);
 }

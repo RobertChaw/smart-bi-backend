@@ -54,9 +54,16 @@ public class UserController {
     @PostMapping("/login")
     public BaseResponse<LoginUserVO> login(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest) {
         ThrowUtils.throwIf(userLoginRequest == null, ErrorCode.PARAMS_ERROR);
-        LoginUserVO loginUserVO = userService.login(userLoginRequest,httpServletRequest);
+        LoginUserVO loginUserVO = userService.login(userLoginRequest, httpServletRequest);
 
         return ResultUtils.success(loginUserVO);
+    }
+
+    @PostMapping("/logout")
+    public BaseResponse<Boolean> logout(HttpServletRequest servletRequest) {
+        ThrowUtils.throwIf(servletRequest == null, ErrorCode.PARAMS_ERROR);
+        boolean isSucceeded = userService.logout(servletRequest);
+        return ResultUtils.success(isSucceeded);
     }
 
     @PostMapping("/register")
