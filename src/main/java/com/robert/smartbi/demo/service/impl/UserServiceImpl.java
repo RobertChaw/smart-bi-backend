@@ -7,11 +7,11 @@ import com.robert.smartbi.demo.constant.UserConstant;
 import com.robert.smartbi.demo.exception.ThrowUtils;
 import com.robert.smartbi.demo.model.dto.user.UserLoginRequest;
 import com.robert.smartbi.demo.model.dto.user.UserRegisterRequest;
+import com.robert.smartbi.demo.model.dto.user.UserUpdateRequest;
 import com.robert.smartbi.demo.model.entity.User;
 import com.robert.smartbi.demo.mapper.UserMapper;
-import com.robert.smartbi.demo.model.vo.LoginUserVO;
+import com.robert.smartbi.demo.model.vo.UserVO;
 import com.robert.smartbi.demo.service.UserService;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +22,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import java.security.MessageDigest;
-
-import static com.robert.smartbi.demo.constant.UserConstant.USER_LOGIN_STATE;
 
 @Service
 @Slf4j
@@ -58,8 +54,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
+    public long updateUser(UserUpdateRequest userUpdateRequest) {
+        String userAccount = userUpdateRequest.getUserAccount();
+        String password = userUpdateRequest.getPassword();
+        // 检查用户名长度是否少于4位
+        if (userAccount != null)
+            ThrowUtils.throwIf(userUpdateRequest.getUserAccount().length() < 4, ErrorCode.PARAMS_ERROR, "用户名长度不能少于4位");
+        // 检查密码长度是否少于8位
+        if (password != null)
+            ThrowUtils.throwIf(userUpdateRequest.getPassword().length() < 8, ErrorCode.PARAMS_ERROR, "密码长度不能少于8位");
+
+        synchronized (userAccount.intern()) {
+            String encryptedPassword = DigestUtils.md5DigestAsHex((SALT + password).getBytes());
+            User user = new User();
+            BeanUtils.copyProperties(userUpdateRequest, user);
+            user.setPassword(encryptedPassword);
+            boolean isSucceeded = updateById(user);
+            ThrowUtils.throwIf(!isSucceeded, ErrorCode.OPERATION_ERROR);
+            return user.getId();
+        }
+    }
+
     @Override
-    public LoginUserVO login(UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest) {
+    public UserVO login(UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest) {
         String userAccount = userLoginRequest.getUserAccount();
         String password = userLoginRequest.getPassword();
         boolean isEmpty = !StringUtils.hasText(userAccount) || !StringUtils.hasText(password);
@@ -74,13 +91,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         httpServletRequest.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
 
-        LoginUserVO loginUserVO = new LoginUserVO();
-        BeanUtils.copyProperties(user, loginUserVO);
-        return loginUserVO;
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return userVO;
     }
 
     @Override
-    public LoginUserVO getCurrentUser() {
+    public UserVO getCurrentUser() {
         RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         HttpSession session = request.getSession();
@@ -88,14 +105,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         boolean isEmpty = session.getAttribute(UserConstant.USER_LOGIN_STATE) == null;
         ThrowUtils.throwIf(isEmpty, ErrorCode.NOT_LOGIN_ERROR, "未登录");
 
-        LoginUserVO loginUserVO = new LoginUserVO();
-        BeanUtils.copyProperties(user, loginUserVO);
-        return loginUserVO;
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return userVO;
     }
 
     @Override
-    public boolean logout(HttpServletRequest httpServletRequest) {
-        HttpSession session = httpServletRequest.getSession();
+    public boolean logout() {
+        RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
+        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+        HttpSession session = request.getSession();
         boolean isEmpty = session.getAttribute(UserConstant.USER_LOGIN_STATE) == null;
         ThrowUtils.throwIf(isEmpty, ErrorCode.NOT_LOGIN_ERROR, "未登录");
 

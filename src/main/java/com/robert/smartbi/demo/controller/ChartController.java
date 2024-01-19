@@ -11,7 +11,7 @@ import com.robert.smartbi.demo.constant.UserConstant;
 import com.robert.smartbi.demo.exception.ThrowUtils;
 import com.robert.smartbi.demo.model.dto.chart.ChartListRequest;
 import com.robert.smartbi.demo.model.entity.Chart;
-import com.robert.smartbi.demo.model.vo.LoginUserVO;
+import com.robert.smartbi.demo.model.vo.UserVO;
 import com.robert.smartbi.demo.service.ChartService;
 import com.robert.smartbi.demo.service.UserService;
 import jakarta.annotation.Resource;
@@ -33,9 +33,9 @@ public class ChartController {
     public BaseResponse<Chart> getChartById(@PathVariable Long id, HttpServletRequest request) {
         ThrowUtils.throwIf(id == null, ErrorCode.PARAMS_ERROR);
 
-        LoginUserVO loginUserVO = userService.getCurrentUser();
+        UserVO userVO = userService.getCurrentUser();
         QueryWrapper<Chart> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId", loginUserVO.getId());
+        queryWrapper.eq("userId", userVO.getId());
         queryWrapper.eq("id", id);
         Chart chart = chartService.getOne(queryWrapper);
         return ResultUtils.success(chart);
@@ -52,12 +52,12 @@ public class ChartController {
     }
 
     private QueryWrapper<Chart> getQueryWrapper(ChartListRequest chartListRequest) {
-        LoginUserVO loginUserVO = userService.getCurrentUser();
+        UserVO userVO = userService.getCurrentUser();
         QueryWrapper<Chart> queryWrapper = new QueryWrapper<>();
         if (chartListRequest == null)
             return queryWrapper;
         Long id = chartListRequest.getId();
-        Long userId = loginUserVO.getId();
+        Long userId = userVO.getId();
         String goal = chartListRequest.getGoal();
         String status = chartListRequest.getStatus();
         String reason = chartListRequest.getReason();
@@ -82,8 +82,8 @@ public class ChartController {
     public BaseResponse<Long> createChart(@RequestBody Chart chart) {
         ThrowUtils.throwIf(chart == null, ErrorCode.PARAMS_ERROR);
 
-        LoginUserVO loginUserVO = userService.getCurrentUser();
-        Long userId = loginUserVO.getId();
+        UserVO userVO = userService.getCurrentUser();
+        Long userId = userVO.getId();
         chart.setUserId(userId);
         boolean isSucceeded = chartService.save(chart);
         ThrowUtils.throwIf(!isSucceeded,ErrorCode.OPERATION_ERROR);
@@ -95,8 +95,8 @@ public class ChartController {
     public BaseResponse<Long> updateChart(@PathVariable Long id, @RequestBody Chart chart) {
         ThrowUtils.throwIf(id == null, ErrorCode.PARAMS_ERROR);
 
-        LoginUserVO loginUserVO = userService.getCurrentUser();
-        Long userId = loginUserVO.getId();
+        UserVO userVO = userService.getCurrentUser();
+        Long userId = userVO.getId();
         chart.setId(id);
         chart.setUserId(userId);
         boolean isSucceeded = chartService.updateById(chart);
@@ -109,8 +109,8 @@ public class ChartController {
     public BaseResponse<Long> deleteChartById(@PathVariable Long id) {
         ThrowUtils.throwIf(id == null, ErrorCode.PARAMS_ERROR);
 
-        LoginUserVO loginUserVO = userService.getCurrentUser();
-        Long userId = loginUserVO.getId();
+        UserVO userVO = userService.getCurrentUser();
+        Long userId = userVO.getId();
         QueryWrapper<Chart> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userId", userId);
         queryWrapper.eq("id", id);

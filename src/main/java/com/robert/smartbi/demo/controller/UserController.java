@@ -1,24 +1,25 @@
 package com.robert.smartbi.demo.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.robert.smartbi.demo.annotation.Auth;
 import com.robert.smartbi.demo.common.BaseResponse;
 import com.robert.smartbi.demo.common.ErrorCode;
 import com.robert.smartbi.demo.common.ResultUtils;
 import com.robert.smartbi.demo.constant.UserConstant;
-import com.robert.smartbi.demo.exception.BusinessException;
 import com.robert.smartbi.demo.exception.ThrowUtils;
+import com.robert.smartbi.demo.model.dto.user.UserListRequest;
 import com.robert.smartbi.demo.model.dto.user.UserLoginRequest;
 import com.robert.smartbi.demo.model.dto.user.UserRegisterRequest;
+import com.robert.smartbi.demo.model.dto.user.UserUpdateRequest;
 import com.robert.smartbi.demo.model.entity.User;
-import com.robert.smartbi.demo.model.vo.LoginUserVO;
+import com.robert.smartbi.demo.model.vo.UserVO;
 import com.robert.smartbi.demo.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,45 +28,80 @@ public class UserController {
     @Resource
     private UserService userService;
 
-/*    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getById(id);
+    /*    @GetMapping("/{id}")
+        public User getUserById(@PathVariable Long id) {
+            return userService.getById(id);
+        }
+
+        @GetMapping
+        public List<User> getAllUsers() {
+            return userService.list();
+        }
+
+        @PostMapping
+        public void createUser(@RequestBody User user) {
+            userService.save(user);
+        }
+
+        @PutMapping("/{id}")
+        public void updateUser(@PathVariable Long id, @RequestBody User user) {
+            user.setId(id);
+            userService.updateById(user);
+        }*/
+    @PutMapping("/{id}")
+    public BaseResponse<Long> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest userUpdateRequest) {
+        ThrowUtils.throwIf(userUpdateRequest == null, ErrorCode.PARAMS_ERROR);
+        userUpdateRequest.setId(id);
+        userService.updateUser(userUpdateRequest);
+        return ResultUtils.success(id);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.list();
+    @Auth(UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<User>> getAllUsers(UserListRequest userListRequest) {
+        long current = userListRequest.getCurrent();
+        long pageSize = userListRequest.getPageSize();
+        Page<User> page = userService.page(new Page<>(current, pageSize), getQueryWrapper(userListRequest));
+        return ResultUtils.success(page);
     }
 
-    @PostMapping
-    public void createUser(@RequestBody User user) {
-        userService.save(user);
-    }
+    private QueryWrapper<User> getQueryWrapper(UserListRequest userListRequest) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (userListRequest == null)
+            return queryWrapper;
+        Long id = userListRequest.getId();
+        String username = userListRequest.getUsername();
+        String userAccount = userListRequest.getUserAccount();
+        String role = userListRequest.getRole();
 
-    @PutMapping("/{id}")
-    public void updateUser(@PathVariable Long id, @RequestBody User user) {
-        user.setId(id);
-        userService.updateById(user);
-    }*/
+        queryWrapper.eq(id != null, "id", id);
+        queryWrapper.like(username != null, "username", username);
+        queryWrapper.like(userAccount != null, "userAccount", userAccount);
+        queryWrapper.eq(role != null, "role", role);
+        queryWrapper.select(i -> !i.getColumn().equals("password"));
+
+        return queryWrapper;
+    }
 
     @DeleteMapping("/{id}")
     @Auth(UserConstant.ADMIN_ROLE)
-    public void deleteUserById(@PathVariable Long id) {
-        userService.removeById(id);
+    public BaseResponse<Long> deleteUserById(@PathVariable Long id) {
+        boolean isSucceeded = userService.removeById(id);
+        ThrowUtils.throwIf(!isSucceeded, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(id);
     }
 
     @PostMapping("/login")
-    public BaseResponse<LoginUserVO> login(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest) {
+    public BaseResponse<UserVO> login(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest) {
         ThrowUtils.throwIf(userLoginRequest == null, ErrorCode.PARAMS_ERROR);
-        LoginUserVO loginUserVO = userService.login(userLoginRequest, httpServletRequest);
+        UserVO userVO = userService.login(userLoginRequest, httpServletRequest);
 
-        return ResultUtils.success(loginUserVO);
+        return ResultUtils.success(userVO);
     }
 
     @PostMapping("/logout")
-    public BaseResponse<Boolean> logout(HttpServletRequest servletRequest) {
-        ThrowUtils.throwIf(servletRequest == null, ErrorCode.PARAMS_ERROR);
-        boolean isSucceeded = userService.logout(servletRequest);
+    public BaseResponse<Boolean> logout() {
+        boolean isSucceeded = userService.logout();
         return ResultUtils.success(isSucceeded);
     }
 
@@ -77,15 +113,19 @@ public class UserController {
     }
 
     @GetMapping("/getCurrentUser")
-    public BaseResponse<LoginUserVO> getCurrentUser(HttpServletRequest servletRequest) {
+    @Auth(UserConstant.DEFAULT_ROLE)
+    public BaseResponse<UserVO> getCurrentUser() {
         // 返回当前用户信息
-        ThrowUtils.throwIf(servletRequest == null, ErrorCode.PARAMS_ERROR);
-        LoginUserVO loginUserVO = userService.getCurrentUser();
-        return ResultUtils.success(loginUserVO);
+        UserVO userVO = userService.getCurrentUser();
+        return ResultUtils.success(userVO);
     }
 
     @PutMapping("/updateCurrentUser")
-    public void updateCurrentUser(@RequestBody User updatedUser) {
-
+    @Auth(UserConstant.DEFAULT_ROLE)
+    public BaseResponse<Long> updateCurrentUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+        UserVO userVO = userService.getCurrentUser();
+        userUpdateRequest.setId(userVO.getId());
+        userService.updateUser(userUpdateRequest);
+        return ResultUtils.success(userVO.getId());
     }
 }
