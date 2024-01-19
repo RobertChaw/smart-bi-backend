@@ -1,8 +1,10 @@
 package com.robert.smartbi.demo.controller;
 
+import com.robert.smartbi.demo.annotation.Auth;
 import com.robert.smartbi.demo.common.BaseResponse;
 import com.robert.smartbi.demo.common.ErrorCode;
 import com.robert.smartbi.demo.common.ResultUtils;
+import com.robert.smartbi.demo.constant.UserConstant;
 import com.robert.smartbi.demo.exception.BusinessException;
 import com.robert.smartbi.demo.exception.ThrowUtils;
 import com.robert.smartbi.demo.model.dto.user.UserLoginRequest;
@@ -46,10 +48,11 @@ public class UserController {
         userService.updateById(user);
     }*/
 
-/*    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")
+    @Auth(UserConstant.ADMIN_ROLE)
     public void deleteUserById(@PathVariable Long id) {
         userService.removeById(id);
-    }*/
+    }
 
     @PostMapping("/login")
     public BaseResponse<LoginUserVO> login(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest) {
