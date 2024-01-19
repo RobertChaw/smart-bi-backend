@@ -80,7 +80,7 @@ public class UserController {
     public BaseResponse<LoginUserVO> getCurrentUser(HttpServletRequest servletRequest) {
         // 返回当前用户信息
         ThrowUtils.throwIf(servletRequest == null, ErrorCode.PARAMS_ERROR);
-        LoginUserVO loginUserVO = userService.getCurrentUser(servletRequest);
+        LoginUserVO loginUserVO = userService.getCurrentUser();
         return ResultUtils.success(loginUserVO);
     }
 

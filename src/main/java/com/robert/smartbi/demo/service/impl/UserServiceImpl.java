@@ -19,6 +19,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.security.MessageDigest;
 
@@ -77,8 +80,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public LoginUserVO getCurrentUser(HttpServletRequest httpServletRequest) {
-        HttpSession session = httpServletRequest.getSession();
+    public LoginUserVO getCurrentUser() {
+        RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
+        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+        HttpSession session = request.getSession();
         User user = (User) session.getAttribute(UserConstant.USER_LOGIN_STATE);
         boolean isEmpty = session.getAttribute(UserConstant.USER_LOGIN_STATE) == null;
         ThrowUtils.throwIf(isEmpty, ErrorCode.NOT_LOGIN_ERROR, "未登录");

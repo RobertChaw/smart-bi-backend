@@ -33,9 +33,7 @@ public class AuthInterceptor {
             return joinPoint.proceed();
         UserRole requiredRole = UserRole.getRoleFromValue(mustRole);
 
-        RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-        LoginUserVO loginUserVO = userService.getCurrentUser(request);
+        LoginUserVO loginUserVO = userService.getCurrentUser();
         String roleValue = loginUserVO.getRole();
         UserRole currentUserRole = UserRole.getRoleFromValue(roleValue);
 
