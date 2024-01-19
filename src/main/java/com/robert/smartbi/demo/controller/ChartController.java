@@ -79,19 +79,20 @@ public class ChartController {
 
     @PostMapping
     @Auth(UserConstant.USER_LOGIN_STATE)
-    public BaseResponse<Boolean> createChart(@RequestBody Chart chart) {
+    public BaseResponse<Long> createChart(@RequestBody Chart chart) {
         ThrowUtils.throwIf(chart == null, ErrorCode.PARAMS_ERROR);
 
         LoginUserVO loginUserVO = userService.getCurrentUser();
         Long userId = loginUserVO.getId();
         chart.setUserId(userId);
         boolean isSucceeded = chartService.save(chart);
-        return ResultUtils.success(isSucceeded);
+        ThrowUtils.throwIf(!isSucceeded,ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(chart.getId());
     }
 
     @PutMapping("/{id}")
     @Auth(UserConstant.USER_LOGIN_STATE)
-    public BaseResponse<Boolean> updateChart(@PathVariable Long id, @RequestBody Chart chart) {
+    public BaseResponse<Long> updateChart(@PathVariable Long id, @RequestBody Chart chart) {
         ThrowUtils.throwIf(id == null, ErrorCode.PARAMS_ERROR);
 
         LoginUserVO loginUserVO = userService.getCurrentUser();
@@ -99,12 +100,13 @@ public class ChartController {
         chart.setId(id);
         chart.setUserId(userId);
         boolean isSucceeded = chartService.updateById(chart);
-        return ResultUtils.success(isSucceeded);
+        ThrowUtils.throwIf(!isSucceeded,ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(chart.getId());
     }
 
     @DeleteMapping("/{id}")
     @Auth(UserConstant.USER_LOGIN_STATE)
-    public BaseResponse<Boolean> deleteChartById(@PathVariable Long id) {
+    public BaseResponse<Long> deleteChartById(@PathVariable Long id) {
         ThrowUtils.throwIf(id == null, ErrorCode.PARAMS_ERROR);
 
         LoginUserVO loginUserVO = userService.getCurrentUser();
@@ -113,6 +115,7 @@ public class ChartController {
         queryWrapper.eq("userId", userId);
         queryWrapper.eq("id", id);
         boolean isSucceeded = chartService.remove(queryWrapper);
-        return ResultUtils.success(isSucceeded);
+        ThrowUtils.throwIf(isSucceeded,ErrorCode.OPERATION_ERROR,"插入失败");
+        return ResultUtils.success(id);
     }
 }
