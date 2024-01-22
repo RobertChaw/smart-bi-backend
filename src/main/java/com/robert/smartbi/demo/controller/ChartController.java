@@ -2,13 +2,17 @@ package com.robert.smartbi.demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.esotericsoftware.minlog.Log;
 import com.robert.smartbi.demo.annotation.Auth;
+import com.robert.smartbi.demo.bimq.BiMessageProducer;
 import com.robert.smartbi.demo.common.BaseResponse;
 import com.robert.smartbi.demo.common.ErrorCode;
+import com.robert.smartbi.demo.common.FileUtils;
 import com.robert.smartbi.demo.common.ResultUtils;
 import com.robert.smartbi.demo.constant.CommonConstant;
 import com.robert.smartbi.demo.constant.UserConstant;
 import com.robert.smartbi.demo.exception.ThrowUtils;
+import com.robert.smartbi.demo.model.dto.chart.ChartCreateRequest;
 import com.robert.smartbi.demo.model.dto.chart.ChartListRequest;
 import com.robert.smartbi.demo.model.entity.Chart;
 import com.robert.smartbi.demo.model.vo.UserVO;
@@ -17,16 +21,25 @@ import com.robert.smartbi.demo.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/charts")
+@Slf4j
 public class ChartController {
 
     @Resource
     private ChartService chartService;
     @Resource
     private UserService userService;
+    @Resource
+    private BiMessageProducer biMessageProducer;
 
     @GetMapping("/{id}")
     @Auth(UserConstant.USER_LOGIN_STATE)
@@ -54,8 +67,7 @@ public class ChartController {
     private QueryWrapper<Chart> getQueryWrapper(ChartListRequest chartListRequest) {
         UserVO userVO = userService.getCurrentUser();
         QueryWrapper<Chart> queryWrapper = new QueryWrapper<>();
-        if (chartListRequest == null)
-            return queryWrapper;
+        if (chartListRequest == null) return queryWrapper;
         Long id = chartListRequest.getId();
         Long userId = userVO.getId();
         String goal = chartListRequest.getGoal();
@@ -79,14 +91,31 @@ public class ChartController {
 
     @PostMapping
     @Auth(UserConstant.USER_LOGIN_STATE)
-    public BaseResponse<Long> createChart(@RequestBody Chart chart) {
-        ThrowUtils.throwIf(chart == null, ErrorCode.PARAMS_ERROR);
+    public BaseResponse<Long> createChart(@RequestParam("file") MultipartFile multipartFile, ChartCreateRequest chartCreateRequest) {
+        ThrowUtils.throwIf(chartCreateRequest == null, ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(multipartFile == null, ErrorCode.PARAMS_ERROR);
+        long size = multipartFile.getSize();
+        ThrowUtils.throwIf(size > 1024 * 1024, ErrorCode.PARAMS_ERROR, "文件不能超过 1 MB");
 
+        Chart chart = new Chart();
         UserVO userVO = userService.getCurrentUser();
         Long userId = userVO.getId();
+        BeanUtils.copyProperties(chartCreateRequest, chart);
         chart.setUserId(userId);
+        File file = null;
+        try {
+            file = File.createTempFile("smart-bi", null);
+            multipartFile.transferTo(file);
+            String data = FileUtils.transformExcel(file);
+            chart.setData(data);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         boolean isSucceeded = chartService.save(chart);
-        ThrowUtils.throwIf(!isSucceeded,ErrorCode.OPERATION_ERROR);
+        ThrowUtils.throwIf(!isSucceeded, ErrorCode.OPERATION_ERROR);
+
+        biMessageProducer.sendMessage(Long.toString(chart.getId()));
         return ResultUtils.success(chart.getId());
     }
 
@@ -100,7 +129,7 @@ public class ChartController {
         chart.setId(id);
         chart.setUserId(userId);
         boolean isSucceeded = chartService.updateById(chart);
-        ThrowUtils.throwIf(!isSucceeded,ErrorCode.OPERATION_ERROR);
+        ThrowUtils.throwIf(!isSucceeded, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(chart.getId());
     }
 
@@ -115,7 +144,7 @@ public class ChartController {
         queryWrapper.eq("userId", userId);
         queryWrapper.eq("id", id);
         boolean isSucceeded = chartService.remove(queryWrapper);
-        ThrowUtils.throwIf(isSucceeded,ErrorCode.OPERATION_ERROR,"插入失败");
+        ThrowUtils.throwIf(isSucceeded, ErrorCode.OPERATION_ERROR, "插入失败");
         return ResultUtils.success(id);
     }
 }

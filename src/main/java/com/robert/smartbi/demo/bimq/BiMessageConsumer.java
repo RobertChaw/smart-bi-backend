@@ -2,6 +2,7 @@ package com.robert.smartbi.demo.bimq;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.esotericsoftware.minlog.Log;
 import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.COSObjectInputStream;
 import com.rabbitmq.client.Channel;
@@ -39,9 +40,11 @@ public class BiMessageConsumer {
 
     @Resource
     private RedisLimiterManager redisLimiterManager;
+
     @SneakyThrows
     @RabbitListener(queues = {BiMqConstant.QUEUE_NAME}, ackMode = "MANUAL")
     public void receiveMessage(String message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+        Log.info("接收到图表任务 id: " + message);
         Chart chart = chartService.getById(message);
         ThrowUtils.throwIf(chart == null, ErrorCode.OPERATION_ERROR);
 
@@ -50,22 +53,19 @@ public class BiMessageConsumer {
 
         // 从数据库读取相关消息，用于生成 ChatGPT 对话
         String goal = chart.getGoal();
-        String dataKey = chart.getData();
+        String data = chart.getData();
         if (goal == null) {
             handleUpdateChartError(chart.getId(), "目标不能为空");
             channel.basicNack(deliveryTag, false, false);
             return;
         }
 
-        if (dataKey == null) {
+        if (data == null) {
             handleUpdateChartError(chart.getId(), "分析数据不能为空");
             channel.basicNack(deliveryTag, false, false);
             return;
         }
 
-        COSObject dataCOSObject = cosManager.getObject(dataKey);
-        COSObjectInputStream dataCOSObjectInputStream = dataCOSObject.getObjectContent();
-        String data = new String(dataCOSObjectInputStream.readAllBytes());
 
         // OpenAi 生成代码
         String openAiResponse = doRequest(goal, data);
@@ -88,8 +88,7 @@ public class BiMessageConsumer {
             channel.basicNack(deliveryTag, false, false);
             return;
         }
-
-        log.info("执行成功 deliveryTag：" + deliveryTag);
+        Log.info("执行成功图表任务 id: " + message);
         channel.basicAck(deliveryTag, false);
     }
 
