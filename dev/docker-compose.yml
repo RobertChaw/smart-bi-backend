@@ -32,19 +32,31 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
-#  elasticsearch:
-#    container_name: elasticsearch
-#    image: elasticsearch:8.11.1
-#    restart: always
-#    environment:
-#      - discovery.type=single-node
-#    ports:
-#      - "9200:9200"
-#      - "9300:9300"
-#    volumes:
-#      - es-data:/usr/share/elasticsearch/data
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.11.1
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=123456
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+  kibana:
+    container_name: kibana
+    image: kibana:8.11.1
+    restart: always
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./kibana-data:/usr/share/kibana/data
 volumes:
   mysql-data:
   rabbitmq-data:
   redis-data:
   es-data:
+  kibana-data:

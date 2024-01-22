@@ -45,7 +45,7 @@ public class ChartController {
     @Auth(UserConstant.USER_LOGIN_STATE)
     public BaseResponse<Chart> getChartById(@PathVariable Long id, HttpServletRequest request) {
         ThrowUtils.throwIf(id == null, ErrorCode.PARAMS_ERROR);
-
+        
         UserVO userVO = userService.getCurrentUser();
         QueryWrapper<Chart> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userId", userVO.getId());

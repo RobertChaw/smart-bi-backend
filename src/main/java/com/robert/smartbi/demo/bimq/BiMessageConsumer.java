@@ -47,7 +47,7 @@ public class BiMessageConsumer {
         Log.info("接收到图表任务 id: " + message);
         Chart chart = chartService.getById(message);
         ThrowUtils.throwIf(chart == null, ErrorCode.OPERATION_ERROR);
-
+        chart.setStatus("running");
         String userId = Long.toString(chart.getUserId());
         redisLimiterManager.doRateLimit(userId);
 
