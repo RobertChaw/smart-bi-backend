@@ -5,7 +5,7 @@ USE bi;
 CREATE TABLE user
 (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username    VARCHAR(100)                                                     COMMENT '用户名',
+    username    VARCHAR(100) COMMENT '用户名',
     userAccount VARCHAR(50)                                                      NOT NULL COMMENT '用户登录名',
     password    VARCHAR(255)                                                     NOT NULL COMMENT '密码',
     avatar      VARCHAR(255) COMMENT '头像',
@@ -21,7 +21,7 @@ CREATE TABLE chart
     userId      BIGINT                                                                                                   NOT NULL COMMENT '用户ID',
     goal        TEXT                                                                                                     NOT NULL COMMENT '生成目标',
     chartOption TEXT COMMENT '图表配置代码',
-    data        TEXT COMMENT '图表原始数据,指向 COS 存储 ID',
+    data        TEXT COMMENT '图表原始数据',
     summary     TEXT COMMENT '摘要',
     status      ENUM ('waiting', 'running', 'succeeded', 'failed') DEFAULT 'waiting'                                     NOT NULL COMMENT '状态',
     reason      TEXT COMMENT '失败原因',
