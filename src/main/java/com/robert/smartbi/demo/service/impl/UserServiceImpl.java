@@ -36,8 +36,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         ThrowUtils.throwIf(userRegisterRequest.getUserAccount().length() < 4, ErrorCode.PARAMS_ERROR, "用户名长度不能少于4位");
         // 检查密码长度是否少于8位
         ThrowUtils.throwIf(userRegisterRequest.getPassword().length() < 8, ErrorCode.PARAMS_ERROR, "密码长度不能少于8位");
-
-        // todo: 不是很懂
+        
         synchronized (userAccount.intern()) {
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("userAccount", userRegisterRequest.getUserAccount());
