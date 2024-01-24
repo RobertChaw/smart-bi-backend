@@ -18,6 +18,7 @@ import com.robert.smartbi.demo.model.entity.Chart;
 import com.robert.smartbi.demo.model.vo.UserVO;
 import com.robert.smartbi.demo.service.ChartService;
 import com.robert.smartbi.demo.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -32,6 +33,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/charts")
 @Slf4j
+@Tag(name = "Chart 接口")
 public class ChartController {
 
     @Resource

@@ -15,6 +15,7 @@ import com.robert.smartbi.demo.model.dto.user.UserUpdateRequest;
 import com.robert.smartbi.demo.model.entity.User;
 import com.robert.smartbi.demo.model.vo.UserVO;
 import com.robert.smartbi.demo.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User 接口")
 public class UserController {
 
     @Resource

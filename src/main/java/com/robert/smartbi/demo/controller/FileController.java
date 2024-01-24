@@ -8,6 +8,8 @@ import com.robert.smartbi.demo.constant.UserConstant;
 import com.robert.smartbi.demo.manager.COSManager;
 import com.robert.smartbi.demo.model.vo.UserVO;
 import com.robert.smartbi.demo.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/files")
+@Tag(name = "File 接口")
 public class FileController {
     @Resource
     private COSManager cosManager;
@@ -35,7 +38,7 @@ public class FileController {
         String uuid = UUID.randomUUID().toString();
         String key = String.format("/%s/%s/%s", type, userVO.getId(), uuid + "-" + fileName);
         String url = FileConstant.COS_HOST + key;
-        
+
         File file = null;
         try {
             file = File.createTempFile(key, null);
