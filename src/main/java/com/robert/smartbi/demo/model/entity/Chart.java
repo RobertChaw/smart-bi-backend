@@ -14,7 +14,7 @@ public class Chart implements Serializable {
 
     private Long userId;
     private String goal;
-    private String data;
+    //    private String data;
     private String chartOption;
     private String status;
     private String reason;

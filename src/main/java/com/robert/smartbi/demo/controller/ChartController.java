@@ -12,9 +12,11 @@ import com.robert.smartbi.demo.common.ResultUtils;
 import com.robert.smartbi.demo.constant.CommonConstant;
 import com.robert.smartbi.demo.constant.UserConstant;
 import com.robert.smartbi.demo.exception.ThrowUtils;
+import com.robert.smartbi.demo.mapper.ChartMapper;
 import com.robert.smartbi.demo.model.dto.chart.ChartCreateRequest;
 import com.robert.smartbi.demo.model.dto.chart.ChartListRequest;
 import com.robert.smartbi.demo.model.entity.Chart;
+import com.robert.smartbi.demo.model.entity.ChartData;
 import com.robert.smartbi.demo.model.vo.UserVO;
 import com.robert.smartbi.demo.service.ChartService;
 import com.robert.smartbi.demo.service.UserService;
@@ -104,18 +106,21 @@ public class ChartController {
         Long userId = userVO.getId();
         BeanUtils.copyProperties(chartCreateRequest, chart);
         chart.setUserId(userId);
-        File file = null;
+
+        boolean isSucceeded = chartService.save(chart);
+        ThrowUtils.throwIf(!isSucceeded, ErrorCode.OPERATION_ERROR);
         try {
-            file = File.createTempFile("smart-bi", null);
+            File file = File.createTempFile("smart-bi", null);
             multipartFile.transferTo(file);
             String data = FileUtils.transformExcel(file);
-            chart.setData(data);
+            ChartMapper chartBaseMapper = (ChartMapper) chartService.getBaseMapper();
+            chartBaseMapper.createChartData(chart.getId());
+            boolean isDataInsertSucceeded = chartBaseMapper.addChartData(chart.getId(), data);
+            ThrowUtils.throwIf(!isDataInsertSucceeded, ErrorCode.OPERATION_ERROR);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        boolean isSucceeded = chartService.save(chart);
-        ThrowUtils.throwIf(!isSucceeded, ErrorCode.OPERATION_ERROR);
 
         biMessageProducer.sendMessage(Long.toString(chart.getId()));
         return ResultUtils.success(chart.getId());

@@ -8,7 +8,7 @@
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="userId" property="userId" jdbcType="BIGINT"/>
         <result column="goal" property="goal" jdbcType="VARCHAR"/>
-        <result column="data" property="data" jdbcType="VARCHAR"/>
+        <!--        <result column="data" property="data" jdbcType="VARCHAR"/>-->
         <result column="chartOption" property="chartOption" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
         <result column="reason" property="reason" jdbcType="VARCHAR"/>
@@ -23,6 +23,25 @@
         id
         , userId, goal, chartOption, data, status, reason, summary, createTime, updateTime, isDelete
     </sql>
+
+    <insert id="addChartData">
+        INSERT INTO chart_${id} (data)
+        VALUES ('${data}')
+    </insert>
+
+    <update id="createChartData">
+        CREATE TABLE chart_${id}
+        (
+            id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+            data        TEXT COMMENT '图表原始数据',
+            createTime  TIMESTAMP                                          DEFAULT CURRENT_TIMESTAMP                             NOT NULL COMMENT '创建时间',
+            updateTime  TIMESTAMP                                          DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL COMMENT '更新时间'
+        )
+    </update>
+
+    <select id="getChartData" resultType="com.robert.smartbi.demo.model.entity.ChartData">
+        SELECT * FROM chart_${id}
+    </select>
 
 
     <!-- 其他 SQL 映射语句，例如查询、插入、更新、删除等 -->

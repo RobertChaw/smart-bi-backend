@@ -10,7 +10,9 @@ import com.robert.smartbi.demo.common.ErrorCode;
 import com.robert.smartbi.demo.exception.ThrowUtils;
 import com.robert.smartbi.demo.manager.COSManager;
 import com.robert.smartbi.demo.manager.RedisLimiterManager;
+import com.robert.smartbi.demo.mapper.ChartMapper;
 import com.robert.smartbi.demo.model.entity.Chart;
+import com.robert.smartbi.demo.model.entity.ChartData;
 import com.robert.smartbi.demo.service.ChartService;
 import com.theokanning.openai.completion.chat.*;
 import com.theokanning.openai.service.OpenAiService;
@@ -45,7 +47,9 @@ public class BiMessageConsumer {
     @RabbitListener(queues = {BiMqConstant.QUEUE_NAME}, ackMode = "MANUAL")
     public void receiveMessage(String message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
         Log.info("接收到图表任务 id: " + message);
+        ChartMapper chartBaseMapper = (ChartMapper) chartService.getBaseMapper();
         Chart chart = chartService.getById(message);
+        ChartData chartData = chartBaseMapper.getChartData(Long.getLong(message));
         ThrowUtils.throwIf(chart == null, ErrorCode.OPERATION_ERROR);
 
         String userId = Long.toString(chart.getUserId());
@@ -53,7 +57,7 @@ public class BiMessageConsumer {
 
         // 从数据库读取相关消息，用于生成 ChatGPT 对话
         String goal = chart.getGoal();
-        String data = chart.getData();
+        String data = chartData.getData();
         if (goal == null) {
             handleUpdateChartError(chart.getId(), "目标不能为空");
             channel.basicNack(deliveryTag, false, false);
