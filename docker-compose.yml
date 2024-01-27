@@ -1,4 +1,5 @@
 # docker-compose.yml
+version: "3.8"
 
 services:
   app:
@@ -24,6 +25,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-management
@@ -44,6 +46,7 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+#      - ./redis.conf:/usr/local/etc/redis/redis.conf
 #  elasticsearch:
 #    container_name: elasticsearch
 #    image: elasticsearch:8.11.1
