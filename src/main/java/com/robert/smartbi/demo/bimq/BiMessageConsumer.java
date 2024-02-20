@@ -49,7 +49,8 @@ public class BiMessageConsumer {
         Log.info("接收到图表任务 id: " + message);
         ChartMapper chartBaseMapper = (ChartMapper) chartService.getBaseMapper();
         Chart chart = chartService.getById(message);
-        ChartData chartData = chartBaseMapper.getChartData(Long.getLong(message));
+        Long chartId = Long.parseLong(message);
+        ChartData chartData = chartBaseMapper.getChartData(chartId);
         ThrowUtils.throwIf(chart == null, ErrorCode.OPERATION_ERROR);
         chart.setStatus("running");
         String userId = Long.toString(chart.getUserId());

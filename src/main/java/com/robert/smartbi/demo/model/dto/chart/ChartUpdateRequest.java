@@ -8,12 +8,11 @@ import java.io.Serializable;
 
 @Data
 @Schema
-public class ChartCreateRequest implements Serializable {
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+public class ChartUpdateRequest implements Serializable {
     private String goal;
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    private MultipartFile file;
-
+    private String chartOption;
+    private String status;
+    private String reason;
+    private String summary;
     private static final long serialVersionUID = 1L;
 }

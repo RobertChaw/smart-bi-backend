@@ -24,7 +24,7 @@ import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/users")
-@Tag(name = "User 接口")
+@Tag(name = "User")
 public class UserController {
 
     @Resource

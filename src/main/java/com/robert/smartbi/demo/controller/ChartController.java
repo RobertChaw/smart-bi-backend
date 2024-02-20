@@ -2,7 +2,6 @@ package com.robert.smartbi.demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.esotericsoftware.minlog.Log;
 import com.robert.smartbi.demo.annotation.Auth;
 import com.robert.smartbi.demo.bimq.BiMessageProducer;
 import com.robert.smartbi.demo.common.BaseResponse;
@@ -15,17 +14,19 @@ import com.robert.smartbi.demo.exception.ThrowUtils;
 import com.robert.smartbi.demo.mapper.ChartMapper;
 import com.robert.smartbi.demo.model.dto.chart.ChartCreateRequest;
 import com.robert.smartbi.demo.model.dto.chart.ChartListRequest;
+import com.robert.smartbi.demo.model.dto.chart.ChartUpdateRequest;
 import com.robert.smartbi.demo.model.entity.Chart;
-import com.robert.smartbi.demo.model.entity.ChartData;
 import com.robert.smartbi.demo.model.vo.UserVO;
 import com.robert.smartbi.demo.service.ChartService;
 import com.robert.smartbi.demo.service.UserService;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,7 +36,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/charts")
 @Slf4j
-@Tag(name = "Chart 接口")
+@Tag(name = "Chart")
 public class ChartController {
 
     @Resource
@@ -93,11 +94,13 @@ public class ChartController {
         return queryWrapper;
     }
 
-    @PostMapping
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Auth(UserConstant.USER_LOGIN_STATE)
-    public BaseResponse<Long> createChart(@RequestParam("file") MultipartFile multipartFile, ChartCreateRequest chartCreateRequest) {
-        ThrowUtils.throwIf(chartCreateRequest == null, ErrorCode.PARAMS_ERROR);
+    public BaseResponse<Long> createChart(@RequestBody ChartCreateRequest chartCreateRequest) {
+        MultipartFile multipartFile = chartCreateRequest.getFile();
+//        ThrowUtils.throwIf(chartCreateRequest == null, ErrorCode.PARAMS_ERROR);
         ThrowUtils.throwIf(multipartFile == null, ErrorCode.PARAMS_ERROR);
+
         long size = multipartFile.getSize();
         ThrowUtils.throwIf(size > 1024 * 1024, ErrorCode.PARAMS_ERROR, "文件不能超过 1 MB");
 
@@ -128,16 +131,19 @@ public class ChartController {
 
     @PutMapping("/{id}")
     @Auth(UserConstant.USER_LOGIN_STATE)
-    public BaseResponse<Long> updateChart(@PathVariable Long id, @RequestBody Chart chart) {
+    public BaseResponse<Long> updateChart(@PathVariable Long id, @RequestBody ChartUpdateRequest chartUpdateRequest) {
         ThrowUtils.throwIf(id == null, ErrorCode.PARAMS_ERROR);
-
         UserVO userVO = userService.getCurrentUser();
         Long userId = userVO.getId();
+
+        Chart chart = new Chart();
+        BeanUtils.copyProperties(chartUpdateRequest, chart);
+
         chart.setId(id);
         chart.setUserId(userId);
         boolean isSucceeded = chartService.updateById(chart);
         ThrowUtils.throwIf(!isSucceeded, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(chart.getId());
+        return ResultUtils.success(id);
     }
 
     @DeleteMapping("/{id}")

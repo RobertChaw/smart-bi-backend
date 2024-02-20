@@ -8,6 +8,7 @@ public interface ChartMapper extends BaseMapper<Chart> {
     ChartData getChartData(long id);
 
     boolean addChartData(long id, String data);
+
     boolean createChartData(long id);
 
 
