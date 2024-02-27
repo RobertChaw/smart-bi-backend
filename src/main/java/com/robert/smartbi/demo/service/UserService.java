@@ -12,7 +12,6 @@ public interface UserService extends IService<User> {
     long register(UserRegisterRequest userRegisterRequest);
     long updateUser(UserUpdateRequest userUpdateRequest);
     UserVO login(UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest);
-
     UserVO getCurrentUser();
     boolean logout();
 }

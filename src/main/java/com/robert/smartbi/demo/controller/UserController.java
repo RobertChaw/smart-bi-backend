@@ -3,6 +3,7 @@ package com.robert.smartbi.demo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.robert.smartbi.demo.annotation.Auth;
+import com.robert.smartbi.demo.common.BasePage;
 import com.robert.smartbi.demo.common.BaseResponse;
 import com.robert.smartbi.demo.common.ErrorCode;
 import com.robert.smartbi.demo.common.ResultUtils;
@@ -60,10 +61,10 @@ public class UserController {
 
     @GetMapping
     @Auth(UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<User>> getAllUsers(UserListRequest userListRequest) {
+    public BaseResponse<BasePage<User>> getUsers(UserListRequest userListRequest) {
         long current = userListRequest.getCurrent();
         long pageSize = userListRequest.getPageSize();
-        Page<User> page = userService.page(new Page<>(current, pageSize), getQueryWrapper(userListRequest));
+        BasePage<User> page = userService.page(new BasePage<>(current, pageSize), getQueryWrapper(userListRequest));
         return ResultUtils.success(page);
     }
 

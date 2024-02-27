@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.robert.smartbi.demo.annotation.Auth;
 import com.robert.smartbi.demo.bimq.BiMessageProducer;
-import com.robert.smartbi.demo.common.BaseResponse;
-import com.robert.smartbi.demo.common.ErrorCode;
-import com.robert.smartbi.demo.common.FileUtils;
-import com.robert.smartbi.demo.common.ResultUtils;
+import com.robert.smartbi.demo.common.*;
 import com.robert.smartbi.demo.constant.CommonConstant;
 import com.robert.smartbi.demo.constant.UserConstant;
 import com.robert.smartbi.demo.exception.ThrowUtils;
@@ -61,11 +58,11 @@ public class ChartController {
 
     @GetMapping
     @Auth(UserConstant.USER_LOGIN_STATE)
-    public BaseResponse<Page<Chart>> getAllCharts(ChartListRequest chartListRequest) {
+    public BaseResponse<BasePage<Chart>> getAllCharts(ChartListRequest chartListRequest) {
         long current = chartListRequest.getCurrent();
         long pageSize = chartListRequest.getPageSize();
         QueryWrapper<Chart> queryWrapper = getQueryWrapper(chartListRequest);
-        Page<Chart> chartPage = chartService.page(new Page<>(current, pageSize), queryWrapper);
+        BasePage<Chart> chartPage = chartService.page(new BasePage<>(current, pageSize), queryWrapper);
         return ResultUtils.success(chartPage);
     }
 
